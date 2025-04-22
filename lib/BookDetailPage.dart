@@ -101,7 +101,7 @@ class BookDetailPage extends StatelessWidget {
                         );
                       }
                     },
-                    child: const Text('Baca'),
+                    child: const Text('Membaca buku'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                       foregroundColor: Colors.white,
