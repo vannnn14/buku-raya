@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "603224733477",
+    "project_id": "bukuraya-f3a47",
+    "storage_bucket": "bukuraya-f3a47.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:603224733477:android:3983326b86b84aa38c8ccc",
+        "android_client_info": {
+          "package_name": "com.example.buku_raya"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "603224733477-eib7uo1sn1o5lb38lqqn53balanhcj5p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.buku_raya",
+            "certificate_hash": "f2801f7e8bbf9a123f5f365ce9ee01dd30e5680d"
+          }
+        },
+        {
+          "client_id": "603224733477-amtt16q1h9891h8msnm14heel60ar31k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEgrG_L4pMgrfEZApM2_plCId3ErYlAtY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "603224733477-amtt16q1h9891h8msnm14heel60ar31k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "603224733477-ha0924ovfm80i4rg3ovmhvg9vklp71nd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bukuRaya"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
