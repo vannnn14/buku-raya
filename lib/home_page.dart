@@ -121,7 +121,7 @@ class HomePage extends StatelessWidget {
                 if (snapshot.hasError) return Text('Error: ${snapshot.error}');
                 if (!snapshot.hasData) return CircularProgressIndicator();
                 return _buildBookCategory(
-                  title: 'Filsafat',
+                  title:'Filsafat',
                   books: snapshot.data!,
                 );
               },
@@ -140,14 +140,14 @@ class HomePage extends StatelessWidget {
               },
             ),
 
-            // Kategori: Self Improvment
+            // Kategori: Self Improvement
             StreamBuilder<List<Map<String, dynamic>>>(
-              stream: getBooksByCategory('Self Improvment'),
+              stream: getBooksByCategory('Self Improvement'),
               builder: (context, snapshot) {
                 if (snapshot.hasError) return Text('Error: ${snapshot.error}');
                 if (!snapshot.hasData) return CircularProgressIndicator();
                 return _buildBookCategory(
-                  title: 'Self Improvment',
+                  title: 'Self Improvement',
                   books: snapshot.data!,
                 );
               },
