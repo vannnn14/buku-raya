@@ -7,6 +7,7 @@ class FirebaseAuthService {
 
   Stream<User?> get authState => _auth.authStateChanges();
 
+  // Fungsi login menggunakan Google
   Future<void> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -25,8 +26,39 @@ class FirebaseAuthService {
     }
   }
 
+  // Fungsi logout
   Future<void> signOut() async {
     await _auth.signOut();
     await GoogleSignIn().signOut(); // logout from Google as well
+  }
+
+  // Fungsi register menggunakan email dan password
+  Future<User?> registerWithEmailPassword(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  // Fungsi login menggunakan email dan password
+  Future<User?> signInWithEmailPassword(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      print('Login error: ${e.message}');
+      throw e.message ?? 'Gagal login';
+    } catch (e) {
+      print('Error: $e');
+      throw 'Gagal login: $e';
+    }
   }
 }

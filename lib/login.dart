@@ -11,9 +11,43 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
 
+  // Fungsi untuk login menggunakan email dan password
+  void _signInWithEmailPassword() async {
+    final String email = _emailController.text.trim();
+    final String password = _passwordController.text.trim();
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await FirebaseAuthService().signInWithEmailPassword(email, password);
+
+      // Jika login sukses, arahkan ke HomePage
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) =>  HomePage()),
+        );
+      }
+    } catch (e) {
+      // Tampilkan error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal login: $e")),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Fungsi untuk login menggunakan Google
   void _signInWithGoogle() async {
     setState(() {
       _isLoading = true;
@@ -59,9 +93,10 @@ class _LoginState extends State<Login> {
                 const SizedBox(height: 60),
 
                 // Form Input Email
-                const TextField(
-                  decoration: InputDecoration(
-                    labelText: "Nama Pengguna/Email",
+                TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: "Email",
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -69,6 +104,7 @@ class _LoginState extends State<Login> {
 
                 // Form Input Password
                 TextField(
+                  controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: "Kata Sandi",
@@ -89,7 +125,7 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 15),
 
-                // Tombol Masuk (manual / belum dihubungkan ke Firebase Auth email-password)
+                // Tombol Masuk dengan Email dan Password
                 SizedBox(
                   width: double.infinity,
                   height: 35,
@@ -100,20 +136,20 @@ class _LoginState extends State<Login> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: _isLoading
-                        ? null
-                        : () {
-                            // Placeholder login manual
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>  HomePage()),
-                            );
-                          },
-                    child: const Text(
-                      "Masuk",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    onPressed: _isLoading ? null : _signInWithEmailPassword,
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            "Masuk",
+                            style: TextStyle(color: Colors.white),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 10),
