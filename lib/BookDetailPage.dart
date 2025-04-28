@@ -76,6 +76,33 @@ class BookDetailPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.bookmark_border),
+                      onPressed: () {
+                        // Aksi simpan
+                      },
+                    ),
+                    SizedBox(width: 8),
+                    IconButton(
+                      icon: Icon(Icons.favorite_border),
+                      onPressed: () {
+                        // Aksi love
+                      },
+                    ),
+                    SizedBox(width: 8),
+                    IconButton(
+                      icon: Icon(Icons.comment),
+                      onPressed: () {
+                        // Aksi komentar
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
                 // Tombol baca
                 Center(
                   child: ElevatedButton(

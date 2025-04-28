@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:buku_raya/service/firebase_auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:buku_raya/BookDetailPage.dart';
+import 'package:buku_raya/add_book_page.dart';
 import 'dart:convert'; // untuk base64Decode
 import 'dart:typed_data'; // untuk Uint8List
 
+
 class HomePage extends StatelessWidget {
+  // Fungsi untuk mengambil buku berdasarkan kategori
   Stream<List<Map<String, dynamic>>> getBooksByCategory(String kategori) {
     return FirebaseFirestore.instance
         .collection('books')
@@ -19,6 +22,21 @@ class HomePage extends StatelessWidget {
                 return data;
               }).toList(),
         );
+  }
+
+  // Fungsi untuk mengambil kategori yang ada di Firestore
+  Stream<List<String>> getCategories() {
+    return FirebaseFirestore.instance
+        .collection('books')
+        .snapshots()
+        .map((snapshot) {
+          final categories = <String>{}; // Menggunakan set untuk menghindari duplikasi
+          for (var doc in snapshot.docs) {
+            final data = doc.data() as Map<String, dynamic>;
+            categories.add(data['kategori']); // Menambahkan kategori ke set
+          }
+          return categories.toList(); // Mengubah set menjadi list
+        });
   }
 
   @override
@@ -39,14 +57,24 @@ class HomePage extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0, // sementara 0, berarti halaman ini Home
+        onTap: (index) {
+          if (index == 2) { // ✏️ tombol ketiga
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddBookPage()),
+            );
+          }
+          // kalau mau nanti index 1 (bookmark) dan 3 (profile) ada navigasi lain, tinggal tambahin if else di sini
+        },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.edit), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
         ],
-        selectedItemColor: Colors.black, // warna icon saat dipilih
-        unselectedItemColor: Colors.black, // warna icon saat tidak dipilih
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
         showSelectedLabels: false,
         showUnselectedLabels: false,
       ),
@@ -114,41 +142,30 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Kategori: Filsafat
-            StreamBuilder<List<Map<String, dynamic>>>(
-              stream: getBooksByCategory('Filsafat'),
+            // StreamBuilder untuk mengambil kategori
+            StreamBuilder<List<String>>(
+              stream: getCategories(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) return Text('Error: ${snapshot.error}');
                 if (!snapshot.hasData) return CircularProgressIndicator();
-                return _buildBookCategory(
-                  title:'Filsafat',
-                  books: snapshot.data!,
-                );
-              },
-            ),
 
-            // Kategori: Fiksi Sejarah
-            StreamBuilder<List<Map<String, dynamic>>>(
-              stream: getBooksByCategory('Fiksi Sejarah'),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-                if (!snapshot.hasData) return CircularProgressIndicator();
-                return _buildBookCategory(
-                  title: 'Fiksi Sejarah',
-                  books: snapshot.data!,
-                );
-              },
-            ),
+                // Menampilkan kategori secara dinamis
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: snapshot.data!.map((category) {
+                    return StreamBuilder<List<Map<String, dynamic>>>(
+                      stream: getBooksByCategory(category),
+                      builder: (context, booksSnapshot) {
+                        if (booksSnapshot.hasError) return Text('Error: ${booksSnapshot.error}');
+                        if (!booksSnapshot.hasData) return CircularProgressIndicator();
 
-            // Kategori: Self Improvement
-            StreamBuilder<List<Map<String, dynamic>>>(
-              stream: getBooksByCategory('Self Improvement'),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-                if (!snapshot.hasData) return CircularProgressIndicator();
-                return _buildBookCategory(
-                  title: 'Self Improvement',
-                  books: snapshot.data!,
+                        return _buildBookCategory(
+                          title: category,
+                          books: booksSnapshot.data!,
+                        );
+                      },
+                    );
+                  }).toList(),
                 );
               },
             ),
@@ -158,6 +175,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  // Widget untuk menampilkan kategori dan buku
   Widget _buildBookCategory({
     required String title,
     required List<Map<String, dynamic>> books,
@@ -189,8 +207,7 @@ class HomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (context) => BookDetailPage(documentId: book['id']),
+                      builder: (context) => BookDetailPage(documentId: book['id']),
                     ),
                   );
                 },
@@ -205,19 +222,17 @@ class HomePage extends StatelessWidget {
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(8),
                         ),
-
-                        child:
-                            book['gambar'] != null
-                                ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.memory(
-                                    base64Decode(
-                                      book['gambar'],
-                                    ), // Decode string base64 jadi gambar
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                                : Icon(Icons.book),
+                        child: book['gambar'] != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.memory(
+                                  base64Decode(
+                                    book['gambar'],
+                                  ), // Decode string base64 jadi gambar
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Icon(Icons.book),
                       ),
                       SizedBox(height: 4),
                       Text(

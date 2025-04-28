@@ -41,7 +41,8 @@ dependencies:
   url_launcher: ^6.2.4  # atau versi terbaru
   flutter_pdfview: ^1.0.0
   flutter_inappwebview: ^6.1.5 # Ganti dengan versi terbaru yang tersedia
-
+  image_picker: ^1.0.5
+  path_provider: ^2.1.2 
 
 dev_dependencies:
 
