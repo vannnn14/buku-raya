@@ -1,6 +1,8 @@
-  import 'package:buku_raya/service/firebase_options.dart';
+  import 'package:buku_raya/favorite_page.dart';
+import 'package:buku_raya/service/firebase_options.dart';
   import 'package:buku_raya/service/firebase_auth_service.dart';
   import 'package:buku_raya/home_page.dart';
+  import 'package:buku_raya/profil_page.dart';
   import 'package:firebase_auth/firebase_auth.dart';
   import 'package:firebase_core/firebase_core.dart';
   import 'package:flutter/material.dart';
@@ -30,6 +32,8 @@
         routes: {
           '/login': (context) => const Login(),
           '/home': (context) => HomePage(),
+            '/profil': (context) => ProfilePage(), 
+            '/favorite': (context) => FavoritePage(),
         },
         home: StreamBuilder<User?>(
           stream: FirebaseAuthService().authState,

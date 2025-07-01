@@ -33,17 +33,18 @@ class FirebaseAuthService {
   }
 
   // Fungsi register menggunakan email dan password
-  Future<User?> registerWithEmailPassword(String email, String password) async {
-    try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
-    } catch (e) {
-      throw e.toString();
-    }
+  Future<UserCredential> registerWithEmailPassword(String email, String password) async {
+  try {
+    return await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+  } on FirebaseAuthException catch (e) {
+    throw Exception("Firebase error: ${e.message}");
+  } catch (e) {
+    throw Exception("Unexpected error: $e");
   }
+}
 
   // Fungsi login menggunakan email dan password
   Future<User?> signInWithEmailPassword(String email, String password) async {
@@ -60,5 +61,5 @@ class FirebaseAuthService {
       print('Error: $e');
       throw 'Gagal login: $e';
     }
-  }
+  }  
 }

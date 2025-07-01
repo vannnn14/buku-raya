@@ -1,6 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.irvan.buku_raya">
     <application
-        android:label="buku_raya"
+        android:label="Buku Raya"   
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

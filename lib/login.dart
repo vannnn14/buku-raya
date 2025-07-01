@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:buku_raya/register.dart';
 import 'package:buku_raya/home_page.dart';
 import 'package:buku_raya/service/firebase_auth_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -16,62 +17,85 @@ class _LoginState extends State<Login> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-  // Fungsi untuk login menggunakan email dan password
-  void _signInWithEmailPassword() async {
-    final String email = _emailController.text.trim();
-    final String password = _passwordController.text.trim();
+void _signInWithEmailPassword() async {
+  final String email = _emailController.text.trim();
+  final String password = _passwordController.text.trim();
 
-    setState(() {
-      _isLoading = true;
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      await FirebaseAuthService().signInWithEmailPassword(email, password);
+  try {
+    await FirebaseAuthService().signInWithEmailPassword(email, password);
 
-      // Jika login sukses, arahkan ke HomePage
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) =>  HomePage()),
-        );
-      }
-    } catch (e) {
-      // Tampilkan error
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal login: $e")),
+        const SnackBar(
+          content: Text("Login berhasil!"),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 1),
+        ),
       );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+
+      // Tunggu snackbar tampil sebentar
+      await Future.delayed(const Duration(seconds: 1));
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     }
-  }
-
-  // Fungsi untuk login menggunakan Google
-  void _signInWithGoogle() async {
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Gagal login")),
+    );
+  } finally {
     setState(() {
-      _isLoading = true;
+      _isLoading = false;
     });
+  }
+}
 
-    try {
-      await FirebaseAuthService().signInWithGoogle();
+void _signInWithGoogle() async {
+  setState(() {
+    _isLoading = true;
+  });
 
-      // Jika login sukses, arahkan ke HomePage
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) =>  HomePage()),
-        );
-      }
-    } catch (e) {
-      // Tampilkan error
+  try {
+    await FirebaseAuthService().signInWithGoogle();
+
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal login: $e")),
+        const SnackBar(
+          content: Text("Login dengan Google berhasil!"),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 1),
+        ),
       );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Login Google Berhasil")),
+    );
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+  void _launchFAQ() async {
+    final url = Uri.parse("https://buku-raya-putriimaharanis-projects.vercel.app/");
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Tidak dapat membuka link")),
+      );
     }
   }
 
@@ -86,13 +110,9 @@ class _LoginState extends State<Login> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 100),
-                Image.asset(
-                  "assets/images/iconbukuraya.png",
-                  height: 100,
-                ),
+                Image.asset("assets/images/iconbukuraya.png", height: 100),
                 const SizedBox(height: 60),
 
-                // Form Input Email
                 TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(
@@ -102,7 +122,6 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 10),
 
-                // Form Input Password
                 TextField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
@@ -111,9 +130,7 @@ class _LoginState extends State<Login> {
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
@@ -125,7 +142,6 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 15),
 
-                // Tombol Masuk dengan Email dan Password
                 SizedBox(
                   width: double.infinity,
                   height: 35,
@@ -154,24 +170,18 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 10),
 
-                // Garis pemisah
                 Row(
                   children: [
-                    const Expanded(
-                        child:
-                            Divider(thickness: 1, color: Colors.black26)),
+                    const Expanded(child: Divider(thickness: 1, color: Colors.black26)),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
                       child: Text("atau"),
                     ),
-                    const Expanded(
-                        child:
-                            Divider(thickness: 1, color: Colors.black26)),
+                    const Expanded(child: Divider(thickness: 1, color: Colors.black26)),
                   ],
                 ),
                 const SizedBox(height: 10),
 
-                // Tombol Masuk dengan Google
                 SizedBox(
                   width: double.infinity,
                   height: 35,
@@ -192,8 +202,7 @@ class _LoginState extends State<Login> {
                               color: Colors.white,
                             ),
                           )
-                        : Image.asset("assets/images/icongoogle.png",
-                            height: 24),
+                        : Image.asset("assets/images/icongoogle.png", height: 24),
                     label: const Text(
                       "Masuk dengan Google",
                       style: TextStyle(color: Colors.white),
@@ -202,7 +211,6 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 20),
 
-                // Link ke halaman daftar
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -211,15 +219,27 @@ class _LoginState extends State<Login> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const Register()),
+                          MaterialPageRoute(builder: (context) => const Register()),
                         );
                       },
                       child: const Text("Daftar"),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 165), // Kasih jarak bawah
+
+                // Tambahan FAQ paling bawah
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Butuh bantuan?"),
+                    TextButton(
+                      onPressed: _launchFAQ,
+                      child: const Text("FAQ"),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:603224733477:android:3983326b86b84aa38c8ccc",
         "android_client_info": {
-          "package_name": "com.example.buku_raya"
+          "package_name": "com.irvan.buku_raya"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "603224733477-eib7uo1sn1o5lb38lqqn53balanhcj5p.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.buku_raya",
+            "package_name": "com.irvan.buku_raya",
             "certificate_hash": "f2801f7e8bbf9a123f5f365ce9ee01dd30e5680d"
           }
         },
@@ -42,7 +42,7 @@
               "client_id": "603224733477-ha0924ovfm80i4rg3ovmhvg9vklp71nd.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.bukuRaya"
+                "bundle_id": "com.irvan.bukuRaya"
               }
             }
           ]

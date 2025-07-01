@@ -1,4 +1,4 @@
-package com.example.buku_raya
+package com.irvan.buku_raya
 
 import io.flutter.embedding.android.FlutterActivity
 
