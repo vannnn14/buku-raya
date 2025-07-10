@@ -17,84 +17,56 @@ class _LoginState extends State<Login> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-void _signInWithEmailPassword() async {
-  final String email = _emailController.text.trim();
-  final String password = _passwordController.text.trim();
+  final FirebaseAuthService _authService = FirebaseAuthService();
 
-  setState(() {
-    _isLoading = true;
-  });
+  Future<void> _signInWithEmailPassword() async {
+    setState(() => _isLoading = true);
+    try {
+      await _authService.signInWithEmailPassword(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
 
-  try {
-    await FirebaseAuthService().signInWithEmailPassword(email, password);
-
-    if (mounted) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Login berhasil!"),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 1),
-        ),
+        const SnackBar(content: Text("Login berhasil!"), backgroundColor: Colors.green),
       );
-
-      // Tunggu snackbar tampil sebentar
       await Future.delayed(const Duration(seconds: 1));
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Gagal login")),
-    );
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
-  }
-}
-
-void _signInWithGoogle() async {
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    await FirebaseAuthService().signInWithGoogle();
-
-    if (mounted) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Login dengan Google berhasil!"),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 1),
-        ),
+        SnackBar(content: Text("Gagal login: $e")),
       );
-
-      await Future.delayed(const Duration(seconds: 1));
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+    } finally {
+      setState(() => _isLoading = false);
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Login Google Berhasil")),
-    );
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
   }
-}
+
+  Future<void> _signInWithGoogle() async {
+    setState(() => _isLoading = true);
+    try {
+      await _authService.signInWithGoogle();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Login dengan Google berhasil!"), backgroundColor: Colors.green),
+      );
+      await Future.delayed(const Duration(seconds: 1));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Login Google gagal: $e")),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
   void _launchFAQ() async {
     final url = Uri.parse("https://buku-raya-putriimaharanis-projects.vercel.app/");
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Tidak dapat membuka link")),
+        const SnackBar(content: Text("Tidak dapat membuka link")),
       );
     }
   }
@@ -104,144 +76,105 @@ void _signInWithGoogle() async {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 100),
-                Image.asset("assets/images/iconbukuraya.png", height: 100),
-                const SizedBox(height: 60),
-
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                    border: OutlineInputBorder(),
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 100),
+              Image.asset("assets/images/iconbukuraya.png", height: 100),
+              const SizedBox(height: 60),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: "Email",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  labelText: "Kata Sandi",
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () {
+                      setState(() => _obscurePassword = !_obscurePassword);
+                    },
                   ),
                 ),
-                const SizedBox(height: 10),
-
-                TextField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: "Kata Sandi",
-                    border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
+              ),
+              const SizedBox(height: 15),
+              SizedBox(
+                width: double.infinity,
+                height: 35,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.brown[900],
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
+                  onPressed: _isLoading ? null : _signInWithEmailPassword,
+                  child: _isLoading
+                      ? const CircularProgressIndicator(strokeWidth: 2, color: Colors.white)
+                      : const Text("Masuk", style: TextStyle(color: Colors.white)),
                 ),
-                const SizedBox(height: 15),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 35,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.brown[900],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: _isLoading ? null : _signInWithEmailPassword,
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text(
-                            "Masuk",
-                            style: TextStyle(color: Colors.white),
-                          ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: const [
+                  Expanded(child: Divider(thickness: 1, color: Colors.black26)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Text("atau"),
                   ),
-                ),
-                const SizedBox(height: 10),
-
-                Row(
-                  children: [
-                    const Expanded(child: Divider(thickness: 1, color: Colors.black26)),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text("atau"),
-                    ),
-                    const Expanded(child: Divider(thickness: 1, color: Colors.black26)),
-                  ],
-                ),
-                const SizedBox(height: 10),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 35,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.brown[900],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: _isLoading ? null : _signInWithGoogle,
-                    icon: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Image.asset("assets/images/icongoogle.png", height: 24),
-                    label: const Text(
-                      "Masuk dengan Google",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                  Expanded(child: Divider(thickness: 1, color: Colors.black26)),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 35,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.brown[900],
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
+                  onPressed: _isLoading ? null : _signInWithGoogle,
+                  icon: _isLoading
+                      ? const SizedBox(
+                          width: 20, height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : Image.asset("assets/images/icongoogle.png", height: 24),
+                  label: const Text("Masuk dengan Google", style: TextStyle(color: Colors.white)),
                 ),
-                const SizedBox(height: 20),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Belum punya akun?"),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const Register()),
-                        );
-                      },
-                      child: const Text("Daftar"),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Belum punya akun?"),
+                  TextButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const Register()),
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 165), // Kasih jarak bawah
-
-                // Tambahan FAQ paling bawah
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Butuh bantuan?"),
-                    TextButton(
-                      onPressed: _launchFAQ,
-                      child: const Text("FAQ"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    child: const Text("Daftar"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 165),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Butuh bantuan?"),
+                  TextButton(
+                    onPressed: _launchFAQ,
+                    child: const Text("FAQ"),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
