@@ -1,16 +1,28 @@
-# buku_raya
+📚 BukuRaya – Aplikasi Manajemen Buku Pribadi
+Aplikasi mobile berbasis Flutter + Firebase yang memungkinkan pengguna menyimpan, mengelola, dan mencari koleksi buku berdasarkan kategori.
 
-A new Flutter project.
+ℹ️ Status: Sedang dalam proses produksi & pengajuan ke Google Play Store
 
-## Getting Started
+✨ Fitur Utama
+🔐 Autentikasi Pengguna (Email & Google Sign-In)
 
-This project is a starting point for a Flutter application.
+📂 Manajemen Data Buku (tambah, edit, hapus)
 
-A few resources to get you started if this is your first Flutter project:
+📚 Kategori Buku (otomatis menampilkan per kategori)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+⭐ Halaman Favorit untuk menyimpan buku pilihan
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+🔄 Sinkronisasi dengan Firebase (Firestore & Auth)
+
+📱 Responsive UI berbasis Flutter
+
+🛠️ Teknologi yang Digunakan
+Flutter – UI Framework
+
+Firebase Authentication – Login & registrasi pengguna
+
+Cloud Firestore – Penyimpanan data buku & profil user
+
+Google Sign-In – Login via akun Google
+
+Flutter Cache Manager – Mengelola caching gambar buku
